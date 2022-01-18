@@ -1,0 +1,32 @@
+
+billID = bill.get("bill_id");
+billDate = bill.get("date").toDate();
+organizationID = organization.get("organization_id");
+dc = organization.get("data_center_extension");
+bil = invokeurl
+[
+	url :"https://inventory.zoho" + dc + "/api/v1/bills/" + billID + "?organization_id=" + organizationID
+	type :GET
+	connection:"zom"
+];
+temp = bil.get("bill");
+lineItems = temp.get("line_items");
+for each  lineItem in lineItems
+{
+	costprice = lineItem.get("rate").toDecimal();
+	info costprice;
+	itemID = lineItem.get("item_id");
+	json = Map();
+	json.put("purchase_rate",costprice);
+	param = Map();
+	param.put("JSONString",json);
+	info param;
+	itemDetails = invokeurl
+	[
+		url :"https://inventory.zoho" + dc + "/api/v1/items/" + itemID + "?organization_id=" + organizationID
+		type :PUT
+		parameters:param
+		connection:"zom"
+	];
+	info itemDetails.get("message");
+}
